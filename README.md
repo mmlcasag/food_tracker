@@ -13,3 +13,6 @@ export FLASK_DEBUG=1
 
 # To run the project:
 flask run
+
+# To start the database:
+sqlite3 database/food_tracker.db < database/food_tracker.sql
