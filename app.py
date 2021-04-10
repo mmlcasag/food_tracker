@@ -56,26 +56,32 @@ def post_home():
 
     return redirect(url_for('get_home'))
 
-@app.route('/day/<date>', methods=['GET'])
-def get_day(date):
+@app.route('/day/<date_id>', methods=['GET'])
+def get_day(date_id):
     db = open_db()
-    cur = db.execute(' select id, entry_date from dates where entry_date = ? ', [date])
-    result = cur.fetchone()
+    cur = db.execute(' select id, entry_date from dates where id = ? ', [date_id])
+    date = cur.fetchone()
 
-    db_date = datetime.strptime(str(result['entry_date']), '%Y%m%d')
-    ft_date = datetime.strftime(db_date, '%B %d, %Y')
-
+    date_db = datetime.strptime(str(date['entry_date']), '%Y%m%d')
+    date_ft = datetime.strftime(date_db, '%B %d, %Y')
+    
     cur = db.execute(' select id, name from foods order by name ')
     foods = cur.fetchall()
 
-    return render_template('day.html', date=date, formatted_date=ft_date, foods=foods)
+    return render_template('day.html', date_id=date_id, date_ft=date_ft, foods=foods)
 
 @app.route('/day', methods=['POST'])
 def post_day():
-    date = request.form['date']
-    food = request.form['food']
+    date_id = request.form['date']
+    food_id = request.form['food']
 
-    return ' Date: {} - Food: {}'.format(date, food)
+    values = [date_id, food_id]
+
+    db = open_db()
+    db.execute(' insert into daily_intake ( date_id, food_id ) values ( ?, ? ) ', values)
+    db.commit()
+
+    return redirect(url_for('get_day', date_id))
 
 @app.route('/add_food', methods=['GET'])
 def get_add_food():

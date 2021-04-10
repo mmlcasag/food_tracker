@@ -36,13 +36,13 @@
         <div>
           <div class="panel panel-primary">
             <div class="panel-heading">
-              <h3 class="panel-title">{{ formatted_date }}</h3>
+              <h3 class="panel-title">{{ date_ft }}</h3>
             </div>
 
             <div class="panel-body">
 
               <form method="POST" action="{{ url_for('post_day') }}">
-                <input type="hidden" name="date" value="{{ date }}"/>
+                <input type="hidden" name="date" value="{{ date_id }}"/>
                 
                 <div class="form-group">
                   <select class="form-control" name="food">
