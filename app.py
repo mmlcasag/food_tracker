@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, url_for, redirect
 import sqlite3
 
 app = Flask(__name__)
@@ -28,11 +28,15 @@ def day():
 
 @app.route('/add_food', methods=['GET'])
 def get_add_food():
-    return render_template('add_food.html')
+    db = open_db()
+    cur = db.execute(' select id, name, protein, carbs, fat, calories from foods order by id ')
+    foods = cur.fetchall()
+    
+    return render_template('add_food.html', foods=foods)
 
 @app.route('/add_food', methods=['POST'])
 def post_add_food():
-    food_name = request.form['food-name']
+    name = request.form['name']
     
     protein = int(request.form['protein'])
     carbs = int(request.form['carbs'])
@@ -40,10 +44,10 @@ def post_add_food():
     
     calories = (protein * 4) + (carbs * 4) + (fat * 9)
 
-    values = [food_name, protein, carbs, fat, calories]
+    values = [name, protein, carbs, fat, calories]
 
     db = open_db()
     db.execute(' insert into foods ( name, protein, carbs, fat, calories ) values ( ?, ?, ?, ?, ? ) ', values)
     db.commit()
 
-    return render_template('add_food.html')
+    return redirect(url_for('get_add_food'))
