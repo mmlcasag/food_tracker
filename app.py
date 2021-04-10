@@ -56,9 +56,26 @@ def post_home():
 
     return redirect(url_for('get_home'))
 
-@app.route('/day')
-def day():
-    return render_template('day.html')
+@app.route('/day/<date>', methods=['GET'])
+def get_day(date):
+    db = open_db()
+    cur = db.execute(' select id, entry_date from dates where entry_date = ? ', [date])
+    result = cur.fetchone()
+
+    db_date = datetime.strptime(str(result['entry_date']), '%Y%m%d')
+    ft_date = datetime.strftime(db_date, '%B %d, %Y')
+
+    cur = db.execute(' select id, name from foods order by name ')
+    foods = cur.fetchall()
+
+    return render_template('day.html', date=date, formatted_date=ft_date, foods=foods)
+
+@app.route('/day', methods=['POST'])
+def post_day():
+    date = request.form['date']
+    food = request.form['food']
+
+    return ' Date: {} - Food: {}'.format(date, food)
 
 @app.route('/add_food', methods=['GET'])
 def get_add_food():
