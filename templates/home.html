@@ -34,10 +34,10 @@
 
       <div class="row">
         <div>
-          <form method="POST" action="/">
+          <form method="POST" action="{{ url_for('post_home') }}">
             <div class="form-group">
-              <label for="new-day">New Day</label>
-              <input type="date" class="form-control" id="new-day">
+              <label for="date">New Day</label>
+              <input type="date" class="form-control" id="date" name="date">
             </div>
 
             <button type="submit" class="btn btn-primary">Add</button>

@@ -1,7 +1,10 @@
 from flask import Flask, render_template, g, request, url_for, redirect
+from datetime import datetime
 import sqlite3
 
 app = Flask(__name__)
+
+#
 
 def connect_db():
     sql = sqlite3.connect('/home/mmlcasag/python/food_tracker/database/food_tracker.db')
@@ -18,10 +21,26 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite3_db.close()
 
-@app.route('/')
-def home():
+#
+
+@app.route('/', methods=['GET'])
+def get_home():
     return render_template('home.html')
 
+@app.route('/', methods=['POST'])
+def post_home():
+    str_date = request.form['date']
+    dat_date = datetime.strptime(str_date, '%Y-%m-%d')
+    db_date = datetime.strftime(dat_date, '%Y%m%d')
+    
+    values = [ db_date ]
+
+    db = open_db()
+    db.execute(' insert into dates ( entry_date ) values ( ? )', values)
+    db.commit()
+
+    return redirect(url_for('get_home'))
+    
 @app.route('/day')
 def day():
     return render_template('day.html')
