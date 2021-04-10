@@ -26,7 +26,7 @@ def close_db(error):
 @app.route('/', methods=['GET'])
 def get_home():
     db = open_db()
-    cur = db.execute(' select i.date_id, d.entry_date, sum(f.protein) protein, sum(f.carbs) carbs, sum(f.fat) fat, sum(f.calories) calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id group by i.date_id order by d.entry_date desc ')
+    cur = db.execute(' select d.id date_id, d.entry_date, ifnull(sum(f.protein),0) protein, ifnull(sum(f.carbs),0) carbs, ifnull(sum(f.fat),0) fat, ifnull(sum(f.calories),0) calories from dates d left join daily_intake i on i.date_id = d.id left join foods f on f.id = i.food_id group by d.id order by d.entry_date desc ')
     raw_results = cur.fetchall()
     
     results = []
@@ -42,7 +42,7 @@ def get_home():
         result['carbs'] = i['carbs']
         result['fat'] = i['fat']
         result['calories'] = i['calories']
-
+        
         results.append(result)
 
     return render_template('home.html', results=results)
