@@ -63,21 +63,28 @@
                 <button type="submit" class="btn btn-primary">Add</button>
               </form>
 
-              <div class="page-header"></div>
+              <hr />
 
               {% for food in foods %}
-                <ul class="nav nav-pills" role="tablist">
-                  <li class="active"><a>{{ food.name }}</a></li>
-                  <li><a>Protein: <span class="badge">{{ food.protein }}</span></a></li>
-                  <li><a>Carbohydrates: <span class="badge">{{ food.carbs }}</span></a></li>
-                  <li><a>Fat: <span class="badge">{{ food.fat }}</span></a></li>
-                  <li><a>Calories: <span class="badge">{{ food.calories }}</span></a></li>
-                </ul>
-                <div class="page-header"></div>
+                <div class="panel panel-primary">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">{{ food.name }}</h3>
+                  </div>
+                  <div class="panel-body">
+                    <ul class="nav nav-pills" role="tablist">
+                      <li><a>Protein: <span class="badge">{{ food.protein }}</span></a></li>
+                      <li><a>Carbohydates: <span class="badge">{{ food.carbs }}</span></a></li>
+                      <li><a>Fat: <span class="badge">{{ food.fat }}</span></a></li>
+                      <li><a>Calories: <span class="badge">{{ food.calories }}</span></a></li>
+                    </ul>
+                  </div>
+                </div>
               {% endfor %}
+
             </div>
 
           </div>
+          
         </div>
       </div>
 

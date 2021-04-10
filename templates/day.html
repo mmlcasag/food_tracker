@@ -34,12 +34,15 @@
 
       <div class="row">
         <div>
+
           <div class="panel panel-primary">
+            
             <div class="panel-heading">
               <h3 class="panel-title">{{ date_ft }}</h3>
             </div>
 
             <div class="panel-body">
+              
               <form method="POST" action="{{ url_for('post_day') }}">
                 <input type="hidden" name="date" value="{{ date_id }}"/>
                 <div class="form-group">
@@ -51,12 +54,10 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Add</button>
               </form>
-            </div>
+              
+              <hr />
 
-            <hr />
-
-            {% for intake in intakes %}
-              <div style="padding-left: 15px; padding-right: 15px; padding-top: 0px; padding-bottom: 0px;">
+              {% for intake in intakes %}
                 <div class="panel panel-primary">
                   <div class="panel-heading">
                     <h3 class="panel-title">{{ intake.name }}</h3>
@@ -70,12 +71,10 @@
                     </ul>
                   </div>
                 </div>
-              </div>
-            {% endfor %}
-            
-            <hr />
-            
-            <div style="padding-left: 15px; padding-right: 15px; padding-top: 0px; padding-bottom: 0px;">
+              {% endfor %}
+              
+              <hr />
+              
               <div class="panel panel-primary">
                 <div class="panel-heading">
                   <h3 class="panel-title">Total</h3>
@@ -89,9 +88,11 @@
                   </ul>
                 </div>
               </div>
-            </div>
             
+            </div>
+
           </div>
+          
         </div>
       </div>
 

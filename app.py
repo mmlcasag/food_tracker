@@ -26,21 +26,26 @@ def close_db(error):
 @app.route('/', methods=['GET'])
 def get_home():
     db = open_db()
-    cur = db.execute(' select id, entry_date from dates order by entry_date ')
-    results = cur.fetchall()
+    cur = db.execute(' select i.date_id, d.entry_date, sum(f.protein) protein, sum(f.carbs) carbs, sum(f.fat) fat, sum(f.calories) calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id group by i.date_id order by d.entry_date desc ')
+    raw_results = cur.fetchall()
     
-    dates = []
-    for i in results:
+    results = []
+    for i in raw_results:
         db_date = datetime.strptime(str(i['entry_date']), '%Y%m%d')
         ft_date = datetime.strftime(db_date, '%B %d, %Y')
 
-        single_date = {}
-        single_date['id'] = i['id']
-        single_date['entry_date'] = ft_date
+        result = {}
+        result['date_id'] = i['date_id']
+        result['entry_date'] = i['entry_date']
+        result['formatted_date'] = ft_date
+        result['protein'] = i['protein']
+        result['carbs'] = i['carbs']
+        result['fat'] = i['fat']
+        result['calories'] = i['calories']
 
-        dates.append(single_date)
+        results.append(result)
 
-    return render_template('home.html', dates=dates)
+    return render_template('home.html', results=results)
 
 @app.route('/', methods=['POST'])
 def post_home():
@@ -59,7 +64,7 @@ def post_home():
 @app.route('/day/<date_id>', methods=['GET'])
 def get_day(date_id):
     db = open_db()
-    cur = db.execute(' select d.id, d.entry_date from dates d where d.id = ? ', [date_id])
+    cur = db.execute(' select d.id, d.entry_date from dates d where d.id = ? order by d.id ', [date_id])
     date = cur.fetchone()
 
     date_db = datetime.strptime(str(date['entry_date']), '%Y%m%d')
@@ -68,13 +73,13 @@ def get_day(date_id):
     cur = db.execute(' select f.id, f.name from foods f order by f.name ')
     foods = cur.fetchall()
 
-    cur = db.execute(' select sum(f.protein) protein, sum(f.carbs) carbs, sum(f.fat) fat, sum(f.calories) calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? ', [date_id])
-    totals = cur.fetchone()
-
-    cur = db.execute(' select i.date_id, d.entry_date, i.food_id, f.name, f.protein, f.carbs, f.fat, f.calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? ', [date_id])
+    cur = db.execute(' select i.date_id, d.entry_date, i.food_id, f.name, f.protein, f.carbs, f.fat, f.calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? order by i.date_id, f.name ', [date_id])
     intakes = cur.fetchall()
 
-    return render_template('day.html', date_id=date_id, date_ft=date_ft, foods=foods, totals=totals, intakes=intakes)
+    cur = db.execute(' select sum(f.protein) protein, sum(f.carbs) carbs, sum(f.fat) fat, sum(f.calories) calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? ', [date_id])
+    totals = cur.fetchone()
+    
+    return render_template('day.html', date_id=date_id, date_ft=date_ft, foods=foods, intakes=intakes, totals=totals)
 
 @app.route('/day', methods=['POST'])
 def post_day():
@@ -92,7 +97,7 @@ def post_day():
 @app.route('/add_food', methods=['GET'])
 def get_add_food():
     db = open_db()
-    cur = db.execute(' select id, name, protein, carbs, fat, calories from foods order by id ')
+    cur = db.execute(' select id, name, protein, carbs, fat, calories from foods order by name ')
     foods = cur.fetchall()
     
     return render_template('add_food.html', foods=foods)
