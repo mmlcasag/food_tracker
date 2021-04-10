@@ -68,10 +68,13 @@ def get_day(date_id):
     cur = db.execute(' select f.id, f.name from foods f order by f.name ')
     foods = cur.fetchall()
 
+    cur = db.execute(' select sum(f.protein) protein, sum(f.carbs) carbs, sum(f.fat) fat, sum(f.calories) calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? ', [date_id])
+    totals = cur.fetchone()
+
     cur = db.execute(' select i.date_id, d.entry_date, i.food_id, f.name, f.protein, f.carbs, f.fat, f.calories from daily_intake i join dates d on d.id = i.date_id join foods f on f.id = i.food_id where i.date_id = ? ', [date_id])
     intakes = cur.fetchall()
 
-    return render_template('day.html', date_id=date_id, date_ft=date_ft, foods=foods, intakes=intakes)
+    return render_template('day.html', date_id=date_id, date_ft=date_ft, foods=foods, totals=totals, intakes=intakes)
 
 @app.route('/day', methods=['POST'])
 def post_day():
