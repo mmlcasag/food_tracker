@@ -25,7 +25,22 @@ def close_db(error):
 
 @app.route('/', methods=['GET'])
 def get_home():
-    return render_template('home.html')
+    db = open_db()
+    cur = db.execute(' select id, entry_date from dates order by entry_date ')
+    results = cur.fetchall()
+    
+    dates = []
+    for i in results:
+        db_date = datetime.strptime(str(i['entry_date']), '%Y%m%d')
+        ft_date = datetime.strftime(db_date, '%B %d, %Y')
+
+        single_date = {}
+        single_date['id'] = i['id']
+        single_date['entry_date'] = ft_date
+
+        dates.append(single_date)
+
+    return render_template('home.html', dates=dates)
 
 @app.route('/', methods=['POST'])
 def post_home():
@@ -40,7 +55,7 @@ def post_home():
     db.commit()
 
     return redirect(url_for('get_home'))
-    
+
 @app.route('/day')
 def day():
     return render_template('day.html')
