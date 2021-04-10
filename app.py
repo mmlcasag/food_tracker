@@ -8,7 +8,7 @@ def connect_db():
     sql.row_factory = sqlite3.Row
     return sql
 
-def get_db():
+def open_db():
     if not hasattr(g, 'sqlite3_db'):
         g.sqlite3_db = connect_db()
     return g.sqlite3_db
@@ -33,8 +33,17 @@ def get_add_food():
 @app.route('/add_food', methods=['POST'])
 def post_add_food():
     food_name = request.form['food-name']
-    protein = request.form['protein']
-    carbs = request.form['carbs']
-    fat = request.form['fat']
     
-    return '<h1>Food Name: {} - Protein: {} - Carbs: {} - Fat: {}</h1>'.format(food_name, protein, carbs, fat)
+    protein = int(request.form['protein'])
+    carbs = int(request.form['carbs'])
+    fat = int(request.form['fat'])
+    
+    calories = (protein * 4) + (carbs * 4) + (fat * 9)
+
+    values = [food_name, protein, carbs, fat, calories]
+
+    db = open_db()
+    db.execute(' insert into foods ( name, protein, carbs, fat, calories ) values ( ?, ?, ?, ?, ? ) ', values)
+    db.commit()
+
+    return render_template('add_food.html')
