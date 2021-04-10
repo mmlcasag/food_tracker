@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request
 import sqlite3
 
 app = Flask(__name__)
@@ -26,6 +26,15 @@ def home():
 def day():
     return render_template('day.html')
 
-@app.route('/add_food')
-def add_food():
+@app.route('/add_food', methods=['GET'])
+def get_add_food():
     return render_template('add_food.html')
+
+@app.route('/add_food', methods=['POST'])
+def post_add_food():
+    food_name = request.form['food-name']
+    protein = request.form['protein']
+    carbs = request.form['carbs']
+    fat = request.form['fat']
+    
+    return '<h1>Food Name: {} - Protein: {} - Carbs: {} - Fat: {}</h1>'.format(food_name, protein, carbs, fat)
